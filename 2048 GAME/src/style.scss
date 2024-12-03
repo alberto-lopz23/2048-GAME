@@ -11,11 +11,13 @@
   @for $toRow from 0 through 3 {
     $name: row_from_#{$fromRow}_to_#{$toRow};
 
-    @if $fromRow == $toRow {
+    @if $fromRow ==$toRow {
       .#{$name} {
         top: 110 * $toRow + 5;
       }
-    } @else {
+    }
+
+    @else {
       .#{$name} {
         animation-duration: 0.20s;
         animation-name: $name;
@@ -26,6 +28,7 @@
         from {
           top: 110 * $fromRow + 5;
         }
+
         to {
           top: 110 * $toRow + 5;
         }
@@ -38,11 +41,13 @@
   @for $toColumn from 0 through 3 {
     $name: column_from_#{$fromColumn}_to_#{$toColumn};
 
-    @if $fromColumn == $toColumn {
+    @if $fromColumn ==$toColumn {
       .#{$name} {
         left: 110 * $toColumn + 5;
       }
-    } @else {
+    }
+
+    @else {
       .#{$name} {
         animation-duration: 0.20s;
         animation-name: $name;
@@ -53,6 +58,7 @@
         from {
           left: 110 * $fromColumn + 5;
         }
+
         to {
           left: 110 * $toColumn + 5;
         }

@@ -31,12 +31,14 @@ body {
   position: relative;
 }
 
-.board .cell, .tile {
+.board .cell,
+.tile {
   user-select: none;
   cursor: default;
 }
 
-.cell, .tile {
+.cell,
+.tile {
   width: 100px;
   height: 100px;
   margin: 5px;
@@ -126,7 +128,8 @@ body {
   display: inline;
 }
 
-.tile.new, .overlay {
+.tile.new,
+.overlay {
   animation-duration: 0.20s;
   animation-name: newTile;
   animation-fill-mode: forwards;
