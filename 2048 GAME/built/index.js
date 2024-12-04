@@ -219,7 +219,7 @@ var GameEndOverlay = function GameEndOverlay(_ref) {
     React.createElement(
       'p',
       { className: 'score' },
-      'Score: ⚠️Esto estará disponible en breves momentos⚠️',
+      '¡QUE DURO!',
       board.score
     ),
     React.createElement(

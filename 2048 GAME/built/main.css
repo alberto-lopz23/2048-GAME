@@ -64,16 +64,13 @@ body {
   background-color: #dcb;
 }
 
-.tile0 {
-  background-color: #dcb;
-}
 
 .tile2 {
   background-color: #eee;
 }
 
 .tile4 {
-  background-color: #eec;
+  background-color: #DAA520;
 }
 
 .tile8 {
@@ -83,12 +80,12 @@ body {
 
 .tile16 {
   color: #ffe;
-  background-color: #f96;
+  background-color: #81c784;
 }
 
 .tile32 {
   color: #ffe;
-  background-color: #f75;
+  background-color: #4e9af8;
 }
 
 .tile64 {
@@ -98,31 +95,31 @@ body {
 
 .tile128 {
   color: #ffe;
-  background-color: #ec7;
+  background-color: #0025f8;
   font-size: 45px;
 }
 
 .tile256 {
   color: #ffe;
-  background-color: #ec6;
+  background-color: #e250f5;
   font-size: 45px;
 }
 
 .tile512 {
   color: #ffe;
-  background-color: #ec5;
+  background-color: #2ef12e;
   font-size: 45px;
 }
 
 .tile1024 {
   color: #fff;
-  background-color: #ec3;
+  background-color: #20e2e9;
   font-size: 35px;
 }
 
 .tile2048 {
   color: #fff;
-  background-color: #ec2;
+  background-color: #f52b2b;
   font-size: 35px;
 }
 
