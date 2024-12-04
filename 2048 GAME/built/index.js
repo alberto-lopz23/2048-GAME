@@ -16,32 +16,36 @@ var BoardView = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(BoardView).call(this, props));
 
-    _this.state = { board: new Board() };
+    _this.state = { 
+      board: new Board(),
+      showOverlay: false,  // Estado para mostrar el overlay
+      gameOver: false      // Estado para determinar si el juego terminó
+    };
     return _this;
   }
 
   _createClass(BoardView, [{
     key: 'restartGame',
     value: function restartGame() {
-      this.setState({ board: new Board() });
+      this.setState({ board: new Board(), showOverlay: false, gameOver: false }); // Reinicia el juego
     }
   }, {
     key: 'handleKeyDown',
     value: function handleKeyDown(event) {
-      if (this.state.board.hasWon()) {
-        return;
+      if (this.state.gameOver) {
+        return; // Si el juego terminó, no hacer nada
       }
       if (event.keyCode >= 37 && event.keyCode <= 40) {
         event.preventDefault();
         var direction = event.keyCode - 37;
-        this.setState({ board: this.state.board.move(direction) });
+        this.setState({ board: this.state.board.move(direction) }, this.checkGameOver);
       }
     }
   }, {
     key: 'handleTouchStart',
     value: function handleTouchStart(event) {
-      if (this.state.board.hasWon()) {
-        return;
+      if (this.state.gameOver) {
+        return; // Si el juego terminó, no hacer nada
       }
       if (event.touches.length != 1) {
         return;
@@ -53,8 +57,8 @@ var BoardView = function (_React$Component) {
   }, {
     key: 'handleTouchEnd',
     value: function handleTouchEnd(event) {
-      if (this.state.board.hasWon()) {
-        return;
+      if (this.state.gameOver) {
+        return; // Si el juego terminó, no hacer nada
       }
       if (event.changedTouches.length != 1) {
         return;
@@ -68,7 +72,7 @@ var BoardView = function (_React$Component) {
         direction = deltaY > 0 ? 3 : 1;
       }
       if (direction != -1) {
-        this.setState({ board: this.state.board.move(direction) });
+        this.setState({ board: this.state.board.move(direction) }, this.checkGameOver);
       }
     }
   }, {
@@ -80,6 +84,16 @@ var BoardView = function (_React$Component) {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       window.removeEventListener('keydown', this.handleKeyDown.bind(this));
+    }
+  }, {
+    key: 'checkGameOver',
+    value: function checkGameOver() {
+      if (this.state.board.hasLost()) {
+        // El juego ha terminado, mostramos el overlay después de 5 segundos
+        setTimeout(() => {
+          this.setState({ showOverlay: true, gameOver: true });
+        }, 3000);
+      }
     }
   }, {
     key: 'render',
@@ -103,15 +117,14 @@ var BoardView = function (_React$Component) {
         { className: 'board', onTouchStart: this.handleTouchStart.bind(this), onTouchEnd: this.handleTouchEnd.bind(this), tabIndex: '1' },
         cells,
         tiles,
-        React.createElement(GameEndOverlay, { board: this.state.board, onRestart: this.restartGame.bind(this) })
+        this.state.showOverlay && React.createElement(GameEndOverlay, { board: this.state.board, onRestart: this.restartGame.bind(this) })
       );
     }
   }]);
 
+
   return BoardView;
 }(React.Component);
-
-;
 
 var Cell = function (_React$Component2) {
   _inherits(Cell, _React$Component2);
@@ -138,10 +151,9 @@ var Cell = function (_React$Component2) {
     }
   }]);
 
+
   return Cell;
 }(React.Component);
-
-;
 
 var TileView = function (_React$Component3) {
   _inherits(TileView, _React$Component3);
@@ -192,6 +204,7 @@ var TileView = function (_React$Component3) {
     }
   }]);
 
+
   return TileView;
 }(React.Component);
 
@@ -199,15 +212,7 @@ var GameEndOverlay = function GameEndOverlay(_ref) {
   var board = _ref.board;
   var onRestart = _ref.onRestart;
 
-  var contents = '';
-  if (board.hasWon()) {
-    contents = 'Good Job!';
-  } else if (board.hasLost()) {
-    contents = 'Game Over';
-  }
-  if (!contents) {
-    return null;
-  }
+  var contents = 'Game Over'; // Sólo mostrar "Game Over" ya que no hay condición de victoria
   return React.createElement(
     'div',
     { className: 'overlay' },
