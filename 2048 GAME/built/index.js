@@ -19,7 +19,8 @@ var BoardView = function (_React$Component) {
     _this.state = { 
       board: new Board(),
       showOverlay: false,  // Estado para mostrar el overlay
-      gameOver: false      // Estado para determinar si el juego terminó
+      gameOver: false,     // Estado para determinar si el juego terminó
+      gameWon: false,      // Nuevo estado para determinar si el juego se ganó
     };
     return _this;
   }
@@ -27,12 +28,12 @@ var BoardView = function (_React$Component) {
   _createClass(BoardView, [{
     key: 'restartGame',
     value: function restartGame() {
-      this.setState({ board: new Board(), showOverlay: false, gameOver: false }); // Reinicia el juego
+      this.setState({ board: new Board(), showOverlay: false, gameOver: false, gameWon: false }); // Reinicia el juego
     }
   }, {
     key: 'handleKeyDown',
     value: function handleKeyDown(event) {
-      if (this.state.gameOver) {
+      if (this.state.gameOver || this.state.gameWon) {
         return; // Si el juego terminó, no hacer nada
       }
       if (event.keyCode >= 37 && event.keyCode <= 40) {
@@ -44,7 +45,7 @@ var BoardView = function (_React$Component) {
   }, {
     key: 'handleTouchStart',
     value: function handleTouchStart(event) {
-      if (this.state.gameOver) {
+      if (this.state.gameOver || this.state.gameWon) {
         return; // Si el juego terminó, no hacer nada
       }
       if (event.touches.length != 1) {
@@ -57,7 +58,7 @@ var BoardView = function (_React$Component) {
   }, {
     key: 'handleTouchEnd',
     value: function handleTouchEnd(event) {
-      if (this.state.gameOver) {
+      if (this.state.gameOver || this.state.gameWon) {
         return; // Si el juego terminó, no hacer nada
       }
       if (event.changedTouches.length != 1) {
@@ -93,6 +94,11 @@ var BoardView = function (_React$Component) {
         setTimeout(() => {
           this.setState({ showOverlay: true, gameOver: true });
         }, 3000);
+      } else if (this.state.board.hasWon()) {
+        // El jugador ganó
+        setTimeout(() => {
+          this.setState({ showOverlay: true, gameWon: true });
+        }, 3000);
       }
     }
   }, {
@@ -117,15 +123,20 @@ var BoardView = function (_React$Component) {
         { className: 'board', onTouchStart: this.handleTouchStart.bind(this), onTouchEnd: this.handleTouchEnd.bind(this), tabIndex: '1' },
         cells,
         tiles,
-        this.state.showOverlay && React.createElement(GameEndOverlay, { board: this.state.board, onRestart: this.restartGame.bind(this) })
+        this.state.showOverlay && React.createElement(GameEndOverlay, { 
+          board: this.state.board, 
+          onRestart: this.restartGame.bind(this),
+          gameOver: this.state.gameOver,
+          gameWon: this.state.gameWon
+        })
       );
     }
   }]);
 
-
   return BoardView;
 }(React.Component);
 
+// Celdas
 var Cell = function (_React$Component2) {
   _inherits(Cell, _React$Component2);
 
@@ -151,10 +162,10 @@ var Cell = function (_React$Component2) {
     }
   }]);
 
-
   return Cell;
 }(React.Component);
 
+// Vista de las fichas
 var TileView = function (_React$Component3) {
   _inherits(TileView, _React$Component3);
 
@@ -204,15 +215,17 @@ var TileView = function (_React$Component3) {
     }
   }]);
 
-
   return TileView;
 }(React.Component);
 
+// Game Over / Win Overlay
 var GameEndOverlay = function GameEndOverlay(_ref) {
   var board = _ref.board;
   var onRestart = _ref.onRestart;
+  var gameOver = _ref.gameOver;
+  var gameWon = _ref.gameWon;
 
-  var contents = 'Game Over'; // Sólo mostrar "Game Over" ya que no hay condición de victoria
+  var contents = gameOver ? 'Game Over' : gameWon ? '¡Has Ganado!' : ''; // Mostrar "Has Ganado" si ganó
   return React.createElement(
     'div',
     { className: 'overlay' },
@@ -224,13 +237,13 @@ var GameEndOverlay = function GameEndOverlay(_ref) {
     React.createElement(
       'p',
       { className: 'score' },
-      '¡QUE DURO!',
-      board.score
+      'Puntuación: ',
+      board.score,
     ),
     React.createElement(
       'button',
       { className: 'tryAgain', onClick: onRestart, onTouchEnd: onRestart },
-      'Try again'
+      'Intentar de nuevo'
     )
   );
 };

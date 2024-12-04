@@ -60,12 +60,15 @@ Tile.prototype.toColumn = function () {
 var Board = function Board() {
   this.tiles = [];
   this.cells = [];
+  this.level = 1;         // Nuevo nivel inicial
+  this.target = 64;       // Valor objetivo para el nivel 1
   for (var i = 0; i < Board.size; ++i) {
     this.cells[i] = [this.addTile(), this.addTile(), this.addTile(), this.addTile()];
   }
   this.addRandomTile();
   this.setPositions();
   this.won = false;
+  this.score = 0;  // Puntuación inicial
 };
 
 Board.prototype.addTile = function () {
@@ -93,9 +96,10 @@ Board.prototype.moveLeft = function () {
         var tile2 = currentRow.shift();
         tile2.mergedInto = targetTile;
         targetTile.value += tile2.value;
+        this.score += targetTile.value; // Aumentar la puntuación
       }
       resultRow[target] = targetTile;
-      this.won |= targetTile.value == 2048;
+      this.won |= targetTile.value == this.target; // Modificación aquí: Ganar cuando se llega al valor de `target`
       hasChanged |= targetTile.value != this.cells[row][target].value;
     }
     this.cells[row] = resultRow;
@@ -146,6 +150,14 @@ Board.prototype.move = function (direction) {
     this.addRandomTile();
   }
   this.setPositions();
+
+  // Verificar si se debe avanzar al siguiente nivel
+  if (this.won) {
+    this.level++; // Avanzar al siguiente nivel
+    this.target = this.level * 64; // Incrementar el valor objetivo (Ej. 64 -> 128 -> 192...)
+    this.won = false; // Restablecer el estado de la victoria
+  }
+
   return this;
 };
 
