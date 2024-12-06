@@ -1,5 +1,6 @@
 'use strict';
 
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18,23 +19,53 @@ var BoardView = function (_React$Component) {
 
     _this.state = { 
       board: new Board(),
-      showOverlay: false,  // Estado para mostrar el overlay
-      gameOver: false,     // Estado para determinar si el juego terminó
-      gameWon: false,      // Nuevo estado para determinar si el juego se ganó
+      showOverlay: false,
+      gameOver: false,
+      gameWon: false,
+      elapsedTime: 0, // Estado para el tiempo transcurrido
     };
+
+    _this.timer = null; // Variable para guardar el temporizador
     return _this;
   }
 
   _createClass(BoardView, [{
     key: 'restartGame',
     value: function restartGame() {
-      this.setState({ board: new Board(), showOverlay: false, gameOver: false, gameWon: false }); // Reinicia el juego
+      // Reiniciamos el juego y el temporizador
+      this.setState({ 
+        board: new Board(), 
+        showOverlay: false, 
+        gameOver: false, 
+        gameWon: false, 
+        elapsedTime: 0 // Reiniciar el tiempo
+      });
+
+      // Si había un temporizador en marcha, lo detenemos
+      if (this.timer) {
+        clearInterval(this.timer);
+      }
+
+      // Iniciar el temporizador
+      this.startTimer();
+    }
+  }, {
+    key: 'startTimer',
+    value: function startTimer() {
+      // Iniciar el temporizador para contar el tiempo transcurrido
+      this.timer = setInterval(() => {
+        if (!this.state.gameOver && !this.state.gameWon) {
+          this.setState(prevState => ({
+            elapsedTime: prevState.elapsedTime + 1
+          }));
+        }
+      }, 1000); // Actualiza el tiempo cada segundo
     }
   }, {
     key: 'handleKeyDown',
     value: function handleKeyDown(event) {
       if (this.state.gameOver || this.state.gameWon) {
-        return; // Si el juego terminó, no hacer nada
+        return;
       }
       if (event.keyCode >= 37 && event.keyCode <= 40) {
         event.preventDefault();
@@ -46,7 +77,7 @@ var BoardView = function (_React$Component) {
     key: 'handleTouchStart',
     value: function handleTouchStart(event) {
       if (this.state.gameOver || this.state.gameWon) {
-        return; // Si el juego terminó, no hacer nada
+        return;
       }
       if (event.touches.length != 1) {
         return;
@@ -59,7 +90,7 @@ var BoardView = function (_React$Component) {
     key: 'handleTouchEnd',
     value: function handleTouchEnd(event) {
       if (this.state.gameOver || this.state.gameWon) {
-        return; // Si el juego terminó, no hacer nada
+        return;
       }
       if (event.changedTouches.length != 1) {
         return;
@@ -80,22 +111,30 @@ var BoardView = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       window.addEventListener('keydown', this.handleKeyDown.bind(this));
+      // Iniciar el temporizador cuando el componente se monta
+      this.startTimer();
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       window.removeEventListener('keydown', this.handleKeyDown.bind(this));
+      // Limpiar el temporizador al desmontar el componente
+      if (this.timer) {
+        clearInterval(this.timer);
+      }
     }
   }, {
     key: 'checkGameOver',
     value: function checkGameOver() {
       if (this.state.board.hasLost()) {
-        // El juego ha terminado, mostramos el overlay después de 5 segundos
+        // Detenemos el temporizador cuando el juego termina
+        clearInterval(this.timer);
         setTimeout(() => {
           this.setState({ showOverlay: true, gameOver: true });
         }, 3000);
       } else if (this.state.board.hasWon()) {
-        // El jugador ganó
+        // Detenemos el temporizador cuando el jugador gana
+        clearInterval(this.timer);
         setTimeout(() => {
           this.setState({ showOverlay: true, gameWon: true });
         }, 3000);
@@ -127,11 +166,13 @@ var BoardView = function (_React$Component) {
           board: this.state.board, 
           onRestart: this.restartGame.bind(this),
           gameOver: this.state.gameOver,
-          gameWon: this.state.gameWon
+          gameWon: this.state.gameWon,
+          time: this.state.elapsedTime // Pasamos el tiempo al overlay
         })
       );
     }
   }]);
+
 
   return BoardView;
 }(React.Component);
@@ -161,6 +202,7 @@ var Cell = function (_React$Component2) {
       );
     }
   }]);
+
 
   return Cell;
 }(React.Component);
@@ -215,17 +257,22 @@ var TileView = function (_React$Component3) {
     }
   }]);
 
+
   return TileView;
 }(React.Component);
 
-// Game Over / Win Overlay
+// Game Over 
 var GameEndOverlay = function GameEndOverlay(_ref) {
   var board = _ref.board;
   var onRestart = _ref.onRestart;
   var gameOver = _ref.gameOver;
   var gameWon = _ref.gameWon;
+  var time = _ref.time;
 
   var contents = gameOver ? 'Game Over' : gameWon ? '¡Has Ganado!' : ''; // Mostrar "Has Ganado" si ganó
+  var minutes = Math.floor(time / 60);
+  var seconds = time % 60;
+  
   return React.createElement(
     'div',
     { className: 'overlay' },
@@ -241,8 +288,16 @@ var GameEndOverlay = function GameEndOverlay(_ref) {
       board.score,
     ),
     React.createElement(
+      'p',
+      { className: 'time' },
+      'Tiempo: ',
+      minutes,
+      ':',
+      (seconds < 10 ? '0' : '') + seconds // Mostrar segundos con 2 dígitos
+    ),
+    React.createElement(
       'button',
-      { className: 'tryAgain', onClick: onRestart, onTouchEnd: onRestart },
+      { className: 'tryAgain', onClick: onRestart },
       'Intentar de nuevo'
     )
   );

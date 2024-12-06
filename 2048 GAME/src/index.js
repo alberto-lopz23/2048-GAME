@@ -1,3 +1,4 @@
+
 class BoardView extends React.Component {
   constructor(props) {
     super(props);
