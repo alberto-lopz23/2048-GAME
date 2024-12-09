@@ -136,6 +136,7 @@ var GameEndOverlay = ({board, onRestart}) => {
       <button className="tryAgain" onClick={onRestart} onTouchEnd={onRestart}>Try again</button>
     </div>
   );
+
 };
 
-ReactDOM.render(<BoardView />, document.getElementById('boardDiv'));
+ReactDOM.render(<BoardView />, document.getElementById('boardDiv'), <rankingDiv />, document.getElementById('rankingDiv'));

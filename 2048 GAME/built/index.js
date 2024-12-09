@@ -261,6 +261,10 @@ var TileView = function (_React$Component3) {
   return TileView;
 }(React.Component);
 
+
+
+
+
 // Game Over 
 var GameEndOverlay = function GameEndOverlay(_ref) {
   var board = _ref.board;
@@ -269,7 +273,7 @@ var GameEndOverlay = function GameEndOverlay(_ref) {
   var gameWon = _ref.gameWon;
   var time = _ref.time;
 
-  var contents = gameOver ? 'Game Over' : gameWon ? '¡Has Ganado!' : ''; // Mostrar "Has Ganado" si ganó
+  var contents = gameOver ? 'Game Over' : '¡Ganaste!';
   var minutes = Math.floor(time / 60);
   var seconds = time % 60;
   
