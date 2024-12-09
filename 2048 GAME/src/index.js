@@ -120,6 +120,18 @@ class TileView extends React.Component {
   }
 }
 
+
+var rankingDiv = ({rankingDiv}) => {
+  if (!rankingDiv) {
+    return null;
+  }
+  <div className="rankingDiv">
+    <span className='top'>{}</span>
+  </div>
+}
+
+
+
 var GameEndOverlay = ({board, onRestart}) => {
   var contents = '';
   if (board.hasWon()) {
@@ -134,9 +146,12 @@ var GameEndOverlay = ({board, onRestart}) => {
     <div className='overlay'>
       <p className='message'>{contents}</p>
       <button className="tryAgain" onClick={onRestart} onTouchEnd={onRestart}>Try again</button>
+      <a className="ranking" href="ranking.html">
+        Ranking </a>
     </div>
   );
 
 };
 
-ReactDOM.render(<BoardView />, document.getElementById('boardDiv'), <rankingDiv />, document.getElementById('rankingDiv'));
+ReactDOM.render(<BoardView />, document.getElementById('boardDiv'));
+
