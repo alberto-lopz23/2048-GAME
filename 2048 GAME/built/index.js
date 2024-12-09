@@ -323,11 +323,31 @@ var GameEndOverlay = function GameEndOverlay(_ref) {
       'Intentar de nuevo'
     ),
     React.createElement(
-      'a',
-      { className: 'ranking', href: './ranking.html' },
-      'Ranking'
+      'p',
+      { className: 'bestScore' },
+      'Mejor puntuación: ',
+      (() => {
+        // Obtener la puntuación mejor guardada en localStorage, o 0 si no existe
+        const currentBestScore = localStorage.getItem('bestScore') || 0;
+    
+        // Verificar si la puntuación actual es mejor que la mejor puntuación guardada
+        if (board.score > currentBestScore) {
+          // Si la puntuación actual es mejor, actualizamos el localStorage
+          localStorage.setItem('bestScore', board.score);
+        }
+    
+        // Devolver la mejor puntuación guardada (la que estaba antes o la nueva)
+        return currentBestScore;
+      })()
     )
-  );
+    
+    )
+    
+    // React.createElement(
+    //   'a',
+    //   { className: 'ranking', href: './ranking.html' },
+    //   'Ranking'
+    // );
 };
 
 ReactDOM.render(React.createElement(BoardView, null), document.getElementById('boardDiv'));
