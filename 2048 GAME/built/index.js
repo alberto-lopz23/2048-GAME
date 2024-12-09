@@ -29,6 +29,9 @@ var BoardView = function (_React$Component) {
     return _this;
   }
 
+
+
+
   _createClass(BoardView, [{
     key: 'restartGame',
     value: function restartGame() {
@@ -82,11 +85,17 @@ var BoardView = function (_React$Component) {
       if (event.touches.length != 1) {
         return;
       }
+      // Guardar la posición inicial del toque
       this.startX = event.touches[0].screenX;
       this.startY = event.touches[0].screenY;
-      event.preventDefault();
+      
+      // Prevenir la acción predeterminada de deslizar hacia abajo (evitar recarga)
+      if (window.scrollY === 0 && event.touches[0].screenY > this.startY) {
+        event.preventDefault();  // Evita el pull-to-refresh
+      }
     }
-  }, {
+  },
+  {
     key: 'handleTouchEnd',
     value: function handleTouchEnd(event) {
       if (this.state.gameOver || this.state.gameWon) {
@@ -95,19 +104,25 @@ var BoardView = function (_React$Component) {
       if (event.changedTouches.length != 1) {
         return;
       }
+      
       var deltaX = event.changedTouches[0].screenX - this.startX;
       var deltaY = event.changedTouches[0].screenY - this.startY;
       var direction = -1;
+      
+      // Determinar la dirección del deslizamiento (izquierda, derecha, arriba, abajo)
       if (Math.abs(deltaX) > 3 * Math.abs(deltaY) && Math.abs(deltaX) > 30) {
-        direction = deltaX > 0 ? 2 : 0;
+        direction = deltaX > 0 ? 2 : 0;  // Derecha o izquierda
       } else if (Math.abs(deltaY) > 3 * Math.abs(deltaX) && Math.abs(deltaY) > 30) {
-        direction = deltaY > 0 ? 3 : 1;
+        direction = deltaY > 0 ? 3 : 1;  // Abajo o arriba
       }
+      
+      // Si se detecta un movimiento válido, mover la ficha en la dirección correspondiente
       if (direction != -1) {
         this.setState({ board: this.state.board.move(direction) }, this.checkGameOver);
       }
     }
-  }, {
+  }
+  , {
     key: 'componentDidMount',
     value: function componentDidMount() {
       window.addEventListener('keydown', this.handleKeyDown.bind(this));
@@ -173,9 +188,12 @@ var BoardView = function (_React$Component) {
     }
   }]);
 
+ 
 
-  return BoardView;
+  return  BoardView;
 }(React.Component);
+
+
 
 // Celdas
 var Cell = function (_React$Component2) {
@@ -303,6 +321,11 @@ var GameEndOverlay = function GameEndOverlay(_ref) {
       'button',
       { className: 'tryAgain', onClick: onRestart },
       'Intentar de nuevo'
+    ),
+    React.createElement(
+      'a',
+      { className: 'ranking', href: './ranking.html' },
+      'Ranking'
     )
   );
 };
